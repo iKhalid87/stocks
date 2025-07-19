@@ -1,516 +1,521 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Analysis Dashboard</title>
-    <!-- Tailwind CSS CDN for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js CDN for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-    <style>
-        html {
-            font-family: 'Inter', sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Analysis Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+  <style>
+    html {
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: rgb(15 23 42); /* slate-900 */
+      color: #e2e8f0; /* slate-200 */
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2.5rem 1rem; /* py-10 px-4 from prettified, adjusted for overall padding */
+    }
+    input:focus, button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.25);
+    }
+    .transition-base {
+      transition: all 0.3s ease-in-out;
+    }
 
-        /* Dark theme base colors (from gpt.html) */
+    /* Card styling from prettified_dashboard.html */
+    .card {
+      background-color: #1e293b; /* slate-800 */
+      color: #e2e8f0; /* slate-200 */
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 15px -2px rgba(0, 0, 0, 0.3);
+      border-radius: 1.25rem; /* rounded-2xl */
+      padding: 2rem; /* p-8 */
+      width: 100%;
+      max-width: 80rem; /* max-w-5xl, which is 64rem, adjusted slightly for more space if needed */
+      border: 1px solid #334155; /* border-slate-700 */
+    }
+
+    /* Headings */
+    h1 {
+      text-align: center;
+      font-size: 2.5rem; /* text-4xl */
+      font-weight: 700; /* font-bold */
+      margin-bottom: 2rem; /* mb-8 */
+      color: #e2e8f0; /* text-white */
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.25rem; /* text-xl */
+      font-weight: 600; /* font-semibold */
+      margin-top: 1.5rem; /* mt-6 */
+      margin-bottom: 1rem; /* mb-4 */
+      border-bottom: 1px solid #334155; /* border-slate-700 pb-2 */
+      padding-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+    h3 {
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 600; /* font-semibold */
+        margin-bottom: 0.75rem; /* mb-3 */
+        color: #e2e8f0;
+        text-align: left; /* Default alignment */
+        border-bottom: 1px solid #334155; /* Darker border */
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    /* Labels */
+    label {
+      display: block;
+      font-size: 0.875rem; /* text-sm */
+      font-weight: 600; /* font-semibold */
+      margin-bottom: 0.25rem; /* mb-1 */
+      color: #e2e8f0; /* text-slate-200 */
+    }
+
+    /* Inputs */
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      border-radius: 0.5rem; /* rounded-lg */
+      border: 1px solid #475569; /* border-slate-600 */
+      background-color: #334155; /* bg-slate-700 */
+      color: #e2e8f0; /* text-white */
+      padding: 0.5rem 1rem; /* px-4 py-2 */
+      outline: none;
+      transition: all 0.3s ease-in-out;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #4285F4; /* Google Blue */
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.25);
+    }
+
+    /* Buttons */
+    button {
+      background-color: #2563eb; /* bg-blue-600 */
+      color: #FFFFFF; /* text-white */
+      font-weight: 600; /* font-semibold */
+      padding: 0.5rem 1rem; /* py-2 px-4 */
+      border-radius: 0.5rem; /* rounded-lg */
+      transition: all 0.3s ease-in-out; /* transition-base */
+      width: 100%; /* w-full */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1d4ed8; /* hover:bg-blue-700 */
+    }
+
+    .button-secondary {
+      background-color: #334155; /* bg-slate-700 */
+      color: #e2e8f0; /* text-white */
+    }
+    .button-secondary:hover {
+      background-color: #475569; /* hover:bg-slate-600 */
+    }
+
+    /* Loading Indicator */
+    .loading-spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-left-color: #4285F4; /* Blue for visibility */
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 0.5rem;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Error Message */
+    #errorMessage {
+      color: #f87171; /* text-red-500 */
+      font-weight: 600; /* font-semibold */
+      margin-top: 1rem; /* mt-4 */
+      text-align: center;
+    }
+
+    /* Autocomplete Suggestions */
+    .autocomplete-suggestions {
+      background-color: #1e293b; /* bg-slate-800 */
+      border-radius: 0.5rem; /* rounded-lg */
+      border: 1px solid #334155; /* border-slate-600 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      list-style: none;
+      padding: 0;
+      margin-top: 0.5rem; /* mt-2 */
+      position: absolute;
+      width: calc(100% - 2rem); /* Adjust width to match input, considering card padding */
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .autocomplete-suggestion-item {
+      padding: 0.75rem 1rem; /* px-4 py-2 */
+      cursor: pointer;
+      color: #e2e8f0; /* text-white */
+      border-bottom: 1px solid #334155; /* border-slate-700 */
+    }
+    .autocomplete-suggestion-item:last-child {
+      border-bottom: none;
+    }
+    .autocomplete-suggestion-item:hover {
+      background-color: #2d3a4b; /* bg-slate-700 */
+    }
+    .autocomplete-suggestion-item strong {
+      color: #60a5fa; /* blue-400 */
+    }
+    .autocomplete-suggestion-item .text-xs {
+        color: #94a3b8; /* slate-400 */
+    }
+
+    /* Results Section */
+    .results-section {
+      background-color: #1e293b; /* bg-slate-800 */
+      border-radius: 0.5rem; /* rounded-lg */
+      border: 1px solid #334155; /* border-slate-600 */
+      padding: 1.5rem; /* p-6 */
+      margin-top: 2rem; /* mt-8 */
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0; /* py-2 */
+      border-bottom: 1px dashed #334155; /* border-slate-700 */
+      font-size: 0.95rem; /* text-base */
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-item:nth-child(even) {
+        background-color: #2d3a4b; /* Slightly different dark for alternating rows */
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+        border-radius: 0.25rem;
+    }
+    .result-label {
+      font-weight: 500;
+      color: #94a3b8; /* text-slate-400 */
+    }
+    .result-value {
+      font-weight: 700;
+      color: #e2e8f0; /* text-slate-200 */
+    }
+    .upside-positive {
+      color: #6ee7b7; /* green-300 */
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .upside-negative {
+      color: #f87171; /* red-400 */
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      font-size: 0.75rem; /* text-xs */
+      color: #94a3b8; /* text-slate-500 */
+      margin-top: 2.5rem; /* mt-10 */
+      border-top: 1px solid #334155; /* border-t pt-4 border-slate-700 */
+      padding-top: 1rem;
+      text-align: center;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        background-color: #1e293b; /* bg-slate-800 */
+        border-radius: 0.5rem; /* rounded-lg */
+        border: 1px solid #334155; /* border-slate-600 */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        padding: 1.5rem; /* p-6 */
+        margin-top: 2rem; /* mt-8 */
+        height: 350px; /* Fixed height for consistency */
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .chart-container canvas {
+        max-height: 100%;
+        max-width: 100%;
+    }
+
+    /* Chart.js specific overrides for aesthetics on dark theme */
+    canvas {
+        background-color: transparent !important;
+    }
+    .chartjs-tooltip {
+        background: rgba(30, 41, 59, 0.9) !important; /* Darker tooltip background */
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 1rem !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.9rem !important;
+        color: #e2e8f0 !important; /* Light text on dark tooltip */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .chartjs-tooltip-header {
+        padding-bottom: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        font-weight: 600 !important;
+    }
+    .chartjs-tooltip-body {
+        font-weight: 400 !important;
+    }
+    /* Chart ticks and grid lines for dark theme */
+    .chartjs-render-monitor {
+        color: #e2e8f0 !important; /* Ensure chart text is light */
+    }
+    .chartjs-render-monitor .chartjs-axis-line,
+    .chartjs-render-monitor .chartjs-grid-line {
+        stroke: rgba(255, 255, 255, 0.1) !important; /* Light grid lines */
+    }
+    .chartjs-render-monitor .chartjs-axis-label {
+        fill: #e2e8f0 !important; /* Light axis labels */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
         body {
-            --tw-bg-opacity: 1;
-            background-color: rgb(15 23 42 / var(--tw-bg-opacity)); /* slate-900 */
-            color: #e2e8f0; /* slate-200 */
-            min-height: 100vh;
-            padding: 2.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            line-height: 1.6;
+            padding: 1rem;
         }
-
         .card {
-            background-color: #1e293b; /* slate-800 */
-            color: #e2e8f0; /* slate-200 */
-            border-color: #334155; /* slate-700 */
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 15px -2px rgba(0, 0, 0, 0.3); /* Darker shadows for dark theme */
-            border-radius: 1.25rem;
-            padding: 3rem;
-            max-width: 900px;
-            width: 100%;
-            text-align: left;
-            border: 1px solid;
-            position: relative;
-            overflow: hidden;
+            padding: 1.5rem;
+            border-radius: 1rem;
         }
-
         h1 {
-            color: #e2e8f0; /* Light text for headings */
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 2rem;
-            text-align: center;
-            letter-spacing: -0.02em;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
         }
         h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            border-bottom: none;
-            padding-bottom: 0;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
         h3 {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: #e2e8f0;
-            margin-bottom: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #334155; /* Darker border */
-            padding-bottom: 0.75rem;
-            margin-top: 2rem;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            padding-bottom: 0.5rem;
         }
-        label {
-            color: #e2e8f0;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-            font-size: 0.95rem;
-        }
-        input[type="text"], input[type="number"] {
-            background-color: #334155; /* Darker input background */
-            color: #e2e8f0;
-            border-color: #475569; /* Darker input border */
-            border: 1px solid;
-            border-radius: 0.75rem;
-            padding: 0.85rem 1.25rem;
-            width: 100%;
-            font-size: 1.05rem;
-            outline: none;
-            transition: all 0.25s ease-in-out;
-        }
-        input[type="text"]:focus, input[type="number"]:focus {
-            border-color: #4285F4; /* Google Blue for focus */
-            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.25);
-            background-color: #334155;
-        }
-
-        /* Buttons from gpt.html, adapted for dark theme */
-        button {
-            background-color: #2563eb; /* blue-600 from gpt.html */
-            color: #FFFFFF;
-            padding: 0.5rem 1rem; /* py-2 px-4 from gpt.html */
-            border-radius: 0.375rem; /* rounded-md from gpt.html */
-            font-weight: 600; /* font-semibold */
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            border: none;
-            outline: none;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            position: relative;
-            overflow: hidden;
-        }
-        button:hover {
-            background-color: #1d4ed8; /* blue-700 from gpt.html */
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            background-color: #2563eb;
-        }
-
-        .button-secondary {
-            background-color: #334155; /* slate-700 from gpt.html */
-            color: #e2e8f0; /* slate-200 */
-            border: 1px solid #475569; /* slate-600 equivalent for border */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        .button-secondary:hover {
-            background-color: #475569; /* slate-600 (darker) for hover */
-            color: #e2e8f0;
-        }
-        .button-secondary:active {
-            background-color: #334155;
-        }
-
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3); /* Lighter spinner for dark theme */
-            border-left-color: #e2e8f0; /* Lighter color for visibility */
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 0.5rem;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Results and Autocomplete styles adjusted for dark theme */
-        .results-section {
-            background-color: #1e293b;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-top: 2.5rem;
-            border: 1px solid #334155;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 0;
-            border-bottom: 1px dashed #334155;
-            font-size: 1rem;
-        }
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        .result-item:nth-child(even) {
-             background-color: #2d3a4b; /* Slightly different dark for alternating rows */
-             padding-left: 0.5rem;
-             padding-right: 0.5rem;
-             margin-left: -0.5rem;
-             margin-right: -0.5rem;
-             border-radius: 0.25rem;
-        }
-        .result-label {
-            font-weight: 500;
-            color: #94a3b8; /* slate-400 */
-            font-size: 0.95rem;
-        }
-        .result-value {
-            font-weight: 700;
-            color: #e2e8f0; /* slate-200 */
-            font-size: 1rem;
-        }
-        .upside-positive {
-            color: #6ee7b7; /* Green for dark theme */
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-        .upside-negative {
-            color: #f87171; /* Red for dark theme */
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-        .error-message {
-            color: #fca5a5; /* Light red text for dark theme */
-            font-size: 0.95rem;
-            margin-top: 1rem;
-            font-weight: 600;
-            text-align: center;
-            background-color: #7f1d1d; /* Dark red background */
-            border: 1px solid #ef4444;
-            border-radius: 0.5rem;
+        input[type="text"], input[type="number"], button {
             padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            border-radius: 0.6rem;
         }
-        .disclaimer {
-            font-size: 0.75rem;
-            color: #94a3b8; /* slate-400 */
-            margin-top: 2.5rem;
-            text-align: center;
-            border-top: 1px solid #334155;
-            padding-top: 1.5rem;
-            line-height: 1.5;
+        .result-item, .autocomplete-suggestion-item {
+            font-size: 0.9rem;
         }
-
-        .autocomplete-suggestions {
-            background-color: #1e293b;
-            border-radius: 0.75rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            border: 1px solid #334155;
-        }
-        .autocomplete-suggestion-item {
-            padding: 0.8rem 1.2rem;
+        .upside-positive, .upside-negative {
             font-size: 1rem;
-            color: #e2e8f0;
-            border-bottom: 1px solid #334155;
         }
-        .autocomplete-suggestion-item:hover {
-            background-color: #2d3a4b;
-        }
-        .autocomplete-suggestion-item strong {
-            color: #4285F4; /* Google Blue */
-        }
-        .autocomplete-suggestion-item .text-xs {
-            color: #94a3b8;
-        }
-
-        /* Chart container styling */
         .chart-container {
-            background-color: #1e293b;
-            border-radius: 1rem;
-            border: 1px solid #334155;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            padding: 1.5rem;
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-            height: 350px;
-            width: 100%;
-            display: flex;
+            height: 280px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .flex-col.sm\:flex-row {
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
-        .chart-container canvas {
-            max-height: 100%;
-            max-width: 100%;
+        .grid.grid-cols-1.sm\:grid-cols-2 {
+            grid-template-columns: 1fr;
         }
-
-        /* Chart.js specific overrides for aesthetics */
-        canvas {
-            background-color: transparent !important;
-        }
-        .chartjs-tooltip {
-            background: rgba(30, 41, 59, 0.9) !important; /* Darker tooltip background */
-            border-radius: 0.5rem !important;
-            padding: 0.75rem 1rem !important;
-            font-family: 'Inter', sans-serif !important;
-            font-size: 0.9rem !important;
-            color: #e2e8f0 !important; /* Light text on dark tooltip */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .chartjs-tooltip-header {
-            padding-bottom: 0.5rem !important;
-            margin-bottom: 0.5rem !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-            font-weight: 600 !important;
-        }
-        .chartjs-tooltip-body {
-            font-weight: 400 !important;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            .card {
-                padding: 1.5rem;
-                border-radius: 1rem;
-            }
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 1.5rem;
-            }
-            h2 {
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-            }
-            h3 {
-                font-size: 1.2rem;
-                margin-top: 1.5rem;
-                padding-bottom: 0.5rem;
-            }
-            input[type="text"], input[type="number"], button {
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-                border-radius: 0.6rem;
-            }
-            .result-item, .autocomplete-suggestion-item {
-                font-size: 0.9rem;
-            }
-            .upside-positive, .upside-negative {
-                font-size: 1rem;
-            }
-            .chart-container {
-                height: 280px;
-                padding: 1rem;
-                margin-top: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-            .flex-col.sm\:flex-row {
-                flex-direction: column;
-            }
-            .grid.grid-cols-1.sm\:grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-200 min-h-screen p-4">
+<body class="bg-slate-900 min-h-screen flex justify-center items-start py-10 px-4">
 
-    <div class="max-w-4xl mx-auto card bg-slate-800 shadow-xl p-8 rounded-2xl border border-slate-700">
-        <h1 class="text-3xl font-bold text-white mb-6">Company Analysis Dashboard 📈</h1>
-
-        <div class="mb-5 autocomplete-container">
-            <label for="stockSymbol" class="block font-medium mb-1">Stock Symbol (e.g., AAPL)</label>
-            <input id="stockSymbol" type="text" autocomplete="off" class="w-full px-4 py-2 border rounded-md" placeholder="Enter symbol or company name">
-            <ul id="autocompleteSuggestions" class="autocomplete-suggestions hidden">
-                <!-- Suggestions will be populated here -->
-            </ul>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+    <div class="card bg-slate-800 text-slate-200 shadow-xl rounded-2xl p-8 w-full max-w-5xl border border-slate-700">
+        <h1 class="text-4xl font-bold mb-8">Company Analysis Dashboard 📈</h1>
+        
+        <!-- Form Section -->
+        <div class="grid gap-6">
             <div>
-                <label for="earningsGrowthInput" class="block font-medium mb-1">Earnings Growth (G, %):</label>
-                <input id="earningsGrowthInput" type="number" value="8" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
+                <label for="stockSymbol" class="block text-sm font-semibold mb-1">Stock Symbol</label>
+                <input id="stockSymbol" type="text" placeholder="e.g. AAPL" class="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-4 py-2" autocomplete="off" />
+                <ul id="autocompleteSuggestions" class="autocomplete-suggestions hidden mt-2"></ul>
             </div>
+
+            <!-- Inputs Grid -->
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="earningsGrowthInput" class="block text-sm font-semibold mb-1">Earnings Growth (%)</label>
+                    <input id="earningsGrowthInput" type="number" value="8" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                </div>
+                <div>
+                    <label for="marginOfSafetyInput" class="block text-sm font-semibold mb-1">Margin of Safety (%)</label>
+                    <input id="marginOfSafetyInput" type="number" value="25" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                </div>
+            </div>
+
+            <!-- Valuation Inputs -->
             <div>
-                <label for="marginOfSafetyInput" class="block font-medium mb-1">Desired Margin of Safety (%, e.g., 25 for 25%):</label>
-                <input id="marginOfSafetyInput" type="number" value="25" min="0" step="1" class="w-full px-4 py-2 border rounded-md">
+                <h2 class="text-xl font-semibold mt-6 mb-4 text-center border-b border-slate-700 pb-2">Valuation Model Inputs</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="grahamBondYield" class="block text-sm font-semibold mb-1">Graham Bond Yield (%)</label>
+                        <input id="grahamBondYield" type="number" value="4.4" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                    </div>
+                    <div>
+                        <label for="grahamGrowthlessPE" class="block text-sm font-semibold mb-1">Graham Growthless P/E</label>
+                        <input id="grahamGrowthlessPE" type="number" value="8.5" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                    </div>
+                    <div>
+                        <label for="dcfDiscountRate" class="block text-sm font-semibold mb-1">DCF Discount Rate (%)</label>
+                        <input id="dcfDiscountRate" type="number" value="10" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                    </div>
+                    <div>
+                        <label for="dcfTerminalPE" class="block text-sm font-semibold mb-1">DCF Terminal P/E</label>
+                        <input id="dcfTerminalPE" type="number" value="20" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="targetPB" class="block text-sm font-semibold mb-1">Target P/B Ratio</label>
+                        <input id="targetPB" type="number" value="2.5" class="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 transition-base text-white font-semibold py-2 px-4 rounded-lg w-full sm:w-auto">Calculate Fair Value</button>
+                <button id="resetBtn" class="bg-slate-700 hover:bg-slate-600 transition-base text-white font-semibold py-2 px-4 rounded-lg w-full sm:w-auto">Reset</button>
+            </div>
+
+            <div id="loadingIndicator" class="hidden mt-4 flex items-center gap-2 text-blue-600">
+                <span class="loading-spinner border-4 border-t-blue-600 w-5 h-5 rounded-full animate-spin"></span>
+                <span>Fetching data...</span>
+            </div>
+
+            <div id="errorMessage" class="hidden text-red-500 font-semibold mt-4"></div>
+
+            <div id="results" class="results-section hidden">
+                <h2 class="text-2xl font-bold mb-4">Company Overview & Valuation</h2>
+                
+                <h3 class="text-xl font-semibold mb-3">Key Financial Metrics</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    <div class="result-item">
+                        <span class="result-label">Company Name:</span>
+                        <span id="companyNameDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Exchange:</span>
+                        <span id="exchangeDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Market Cap:</span>
+                        <span id="marketCapDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Enterprise Value:</span>
+                        <span id="enterpriseValueDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Current Price:</span>
+                        <span id="currentPriceDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">EPS (TTM):</span>
+                        <span id="epsDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">P/E Ratio:</span>
+                        <span id="peRatioDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Forward P/E:</span>
+                        <span id="forwardPeDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Dividend Yield:</span>
+                        <span id="dividendYieldDisplay" class="result-value"></span>
+                    </div>
+                     <div class="result-item">
+                        <span class="result-label">Book Value Per Share:</span>
+                        <span id="bookValuePerShareDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">52 Week High:</span>
+                        <span id="weekHighDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">52 Week Low:</span>
+                        <span id="weekLowDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item sm:col-span-2">
+                        <span class="result-label">Earnings Growth (User/Analyst):</span>
+                        <span id="growthDisplay" class="result-value"></span>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3">Valuation Model Outputs</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    <div class="result-item">
+                        <span class="result-label">Intrinsic Value (Graham):</span>
+                        <span id="intrinsicValueDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">DCF Value (Simplified):</span>
+                        <span id="dcfValueDisplay" class="result-value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">P/B Value (Target P/B 2.5):</span>
+                        <span id="pbValueDisplay" class="result-value"></span>
+                    </div>
+                </div>
+
+                <div class="result-item font-bold text-lg mt-4">
+                    <span class="result-label">Average Fair Value:</span>
+                    <span id="averageFairValueDisplay" class="result-value text-blue-600"></span>
+                </div>
+                <div class="result-item font-bold text-lg">
+                    <span class="result-label">Fair Value (with MOS):</span>
+                    <span id="mosFairValueDisplay" class="result-value text-blue-600"></span>
+                </div>
+                <div class="result-item font-bold text-lg">
+                    <span class="result-label">Upside Potential (from Avg FV):</span>
+                    <span id="upsideDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item font-bold text-lg">
+                    <span class="result-label">Upside Potential (from MOS FV):</span>
+                    <span id="upsideMosDisplay" class="result-value"></span>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="mt-8 pt-6 border-t border-slate-600">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Visualizations</h3>
+                    <div class="chart-container">
+                        <canvas id="historicalPriceChart"></canvas>
+                        <div id="historicalPriceNoData" class="text-center text-slate-400 mt-4 hidden">No historical price data available.</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="valuationComparisonChart"></canvas>
+                        <div id="valuationComparisonNoData" class="text-center text-slate-400 mt-4 hidden">No valuation comparison data available.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="disclaimer text-xs text-slate-500 mt-10 border-t pt-4 border-slate-600">
+                <strong>Disclaimer:</strong> Data is from Alpha Vantage (subject to API limits). Valuation models are simplified and for educational use only.
             </div>
         </div>
-
-        <div class="border-t border-slate-600 mt-6 pt-6">
-            <h3 class="text-xl font-semibold mb-4">Valuation Model Inputs</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="grahamBondYield" class="block font-medium mb-1">Graham Bond Yield (%):</label>
-                    <input id="grahamBondYield" type="number" value="4.4" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
-                </div>
-                <div>
-                    <label for="grahamGrowthlessPE" class="block font-medium mb-1">Graham Growthless P/E:</label>
-                    <input id="grahamGrowthlessPE" type="number" value="8.5" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
-                </div>
-                <div>
-                    <label for="dcfDiscountRate" class="block font-medium mb-1">DCF Discount Rate (%):</label>
-                    <input id="dcfDiscountRate" type="number" value="10" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
-                </div>
-                <div>
-                    <label for="dcfTerminalPE" class="block font-medium mb-1">DCF Terminal P/E:</label>
-                    <input id="dcfTerminalPE" type="number" value="20" min="0" step="1" class="w-full px-4 py-2 border rounded-md">
-                </div>
-                <div class="sm:col-span-2">
-                    <label for="targetPB" class="block font-medium mb-1">Target P/B Ratio:</label>
-                    <input id="targetPB" type="number" value="2.5" min="0" class="w-full px-4 py-2 border rounded-md" />
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-4 mt-6">
-            <button id="calculateBtn">Calculate Fair Value</button>
-            <button id="resetBtn" class="button-secondary">Reset</button>
-        </div>
-
-        <div id="loadingIndicator" class="hidden mt-4 flex items-center gap-2 text-blue-600">
-            <span class="loading-spinner border-4 border-t-blue-600 w-5 h-5 rounded-full animate-spin"></span>
-            <span>Fetching data...</span>
-        </div>
-
-        <div id="errorMessage" class="hidden text-red-500 font-semibold mt-4"></div>
-
-        <div id="results" class="results-section hidden">
-            <h2 class="text-2xl font-bold mb-4">Company Overview & Valuation</h2>
-            
-            <h3 class="text-xl font-semibold mb-3">Key Financial Metrics</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                <div class="result-item">
-                    <span class="result-label">Company Name:</span>
-                    <span id="companyNameDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Exchange:</span>
-                    <span id="exchangeDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Market Cap:</span>
-                    <span id="marketCapDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Enterprise Value:</span>
-                    <span id="enterpriseValueDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Current Price:</span>
-                    <span id="currentPriceDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">EPS (TTM):</span>
-                    <span id="epsDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">P/E Ratio:</span>
-                    <span id="peRatioDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Forward P/E:</span>
-                    <span id="forwardPeDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Dividend Yield:</span>
-                    <span id="dividendYieldDisplay" class="result-value"></span>
-                </div>
-                 <div class="result-item">
-                    <span class="result-label">Book Value Per Share:</span>
-                    <span id="bookValuePerShareDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">52 Week High:</span>
-                    <span id="weekHighDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">52 Week Low:</span>
-                    <span id="weekLowDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item sm:col-span-2">
-                    <span class="result-label">Earnings Growth (User/Analyst):</span>
-                    <span id="growthDisplay" class="result-value"></span>
-                </div>
-            </div>
-
-            <h3 class="text-xl font-semibold mt-6 mb-3">Valuation Model Outputs</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                <div class="result-item">
-                    <span class="result-label">Intrinsic Value (Graham):</span>
-                    <span id="intrinsicValueDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">DCF Value (Simplified):</span>
-                    <span id="dcfValueDisplay" class="result-value"></span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">P/B Value (Target P/B 2.5):</span>
-                    <span id="pbValueDisplay" class="result-value"></span>
-                </div>
-            </div>
-
-            <div class="result-item font-bold text-lg mt-4">
-                <span class="result-label">Average Fair Value:</span>
-                <span id="averageFairValueDisplay" class="result-value text-blue-600"></span>
-            </div>
-            <div class="result-item font-bold text-lg">
-                <span class="result-label">Fair Value (with MOS):</span>
-                <span id="mosFairValueDisplay" class="result-value text-blue-600"></span>
-            </div>
-            <div class="result-item font-bold text-lg">
-                <span class="result-label">Upside Potential (from Avg FV):</span>
-                <span id="upsideDisplay" class="result-value"></span>
-            </div>
-            <div class="result-item font-bold text-lg">
-                <span class="result-label">Upside Potential (from MOS FV):</span>
-                <span id="upsideMosDisplay" class="result-value"></span>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="mt-8 pt-6 border-t border-slate-600">
-                <h3 class="text-xl font-semibold mb-4 text-center">Visualizations</h3>
-                <div class="chart-container">
-                    <canvas id="historicalPriceChart"></canvas>
-                    <div id="historicalPriceNoData" class="text-center text-slate-400 mt-4 hidden">No historical price data available.</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="valuationComparisonChart"></canvas>
-                    <div id="valuationComparisonNoData" class="text-center text-slate-400 mt-4 hidden">No valuation comparison data available.</div>
-                </div>
-            </div>
-        </div>
-        <div class="disclaimer text-xs text-slate-500 mt-10 border-t pt-4 border-slate-600">
-            <strong>Disclaimer:</strong> Data is from Alpha Vantage (subject to API limits). Valuation models are simplified and for educational use only.
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

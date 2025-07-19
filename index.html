@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Analysis Dashboard</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        /* Base Colors & Typography for Light Theme */
+        :root {
+            --color-primary: #1A73E8; /* Google Blue for accents */
+            --color-primary-dark: #174EA6; /* Darker primary for hover/active */
+            --color-accent: #4285F4; /* Lighter blue for subtle highlights */
+            --color-background-light: #F8F9FA; /* Light background for the page */
+            --color-background-medium: #FFFFFF; /* White for cards/sections */
+            --color-text-dark: #202124; /* Dark gray for main text */
+            --color-text-medium: #5F6368; /* Medium gray for secondary text */
+            --color-success: #34A853; /* Google Green */
+            --color-danger: #EA4335; /* Google Red */
+            --color-border: #DADCE0; /* Light gray for subtle borders */
+            --color-shadow-light: rgba(0, 0, 0, 0.1);
+            --color-shadow-medium: rgba(0, 0, 0, 0.2);
+
+            /* Light Theme Grey Shades for Buttons */
+            --button-grey-primary: #E0E0E0; /* Light grey */
+            --button-grey-primary-hover: #D5D5D5; /* Slightly darker grey on hover */
+            --button-grey-secondary: #F0F0F0; /* Even lighter grey */
+            --button-grey-secondary-hover: #E5E5E5; /* Slightly darker secondary grey on hover */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-background-light);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2.5rem;
+            color: var(--color-text-medium);
+            line-height: 1.6;
+        }
+        .card {
+            background-color: var(--color-background-medium);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px -5px var(--color-shadow-medium), 0 4px 15px -2px var(--color-shadow-light);
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            color: var(--color-text-dark);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-text-dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--color-text-dark);
+            margin-bottom: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.75rem;
+            margin-top: 2rem;
+        }
+        label {
+            color: var(--color-text-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.95rem;
+        }
+        input[type="text"], input[type="number"] {
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            padding: 0.85rem 1.25rem;
+            width: 100%;
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.25s ease-in-out;
+            background-color: #FDFDFD; /* Input background slightly off-white */
+            color: var(--color-text-dark);
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
+            background-color: #FFFFFF;
+        }
+        button {
+            /* Smaller, Grey Button Style (Light Theme) */
+            background: var(--button-grey-primary);
+            color: var(--color-text-dark); /* Dark text on light button */
+            border-radius: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid var(--color-border); /* Add border for definition */
+            outline: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            background: var(--button-grey-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            background: var(--button-grey-primary);
+        }
+
+        .button-secondary {
+            background: var(--button-grey-secondary);
+            color: var(--color-text-dark);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 2px 8px var(--color-shadow-light);
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .button-secondary:hover {
+            background: var(--button-grey-secondary-hover);
+            color: var(--color-text-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px var(--color-shadow-medium);
+        }
+        .button-secondary:active {
+            transform: translateY(0);
+            box_shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            background: var(--button-grey-secondary);
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(0, 0, 0, 0.3); /* Darker spinner for light theme */
+            border-left-color: #202124; /* Darker color for visibility */
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .results-section {
+            background-color: var(--color-background-medium);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed var(--color-border);
+            font-size: 1rem;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item:nth-child(even) {
+             background-color: #F5F5F5; /* Slightly different light for alternating rows */
+             padding-left: 0.5rem;
+             padding-right: 0.5rem;
+             margin-left: -0.5rem;
+             margin-right: -0.5rem;
+             border-radius: 0.25rem;
+        }
+        .result-label {
+            font-weight: 500;
+            color: var(--color-text-medium);
+            font-size: 0.95rem;
+        }
+        .result-value {
+            font-weight: 700;
+            color: var(--color-text-dark);
+            font-size: 1rem;
+        }
+        .upside-positive {
+            color: var(--color-success);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .upside-negative {
+            color: var(--color-danger);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .error-message {
+            color: #721C24; /* Dark red text for light theme */
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
+            background-color: #F8D7DA; /* Light red background */
+            border: 1px solid #F5C6CB;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+        .disclaimer {
+            font-size: 0.75rem;
+            color: var(--color-text-medium);
+            margin-top: 2.5rem;
+            text-align: center;
+            border-top: 1px solid var(--color-border);
+            padding-top: 1.5rem;
+            line-height: 1.5;
+        }
+
+        /* Autocomplete specific styles */
+        .autocomplete-suggestions {
+            background-color: #FFFFFF; /* White background */
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 20px var(--color-shadow-medium);
+            border: 1px solid var(--color-border);
+        }
+        .autocomplete-suggestion-item {
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+            color: var(--color-text-dark);
+            border-bottom: 1px solid #E0E0E0; /* Lighter separator */
+        }
+        .autocomplete-suggestion-item:hover {
+            background-color: #F0F0F0; /* Subtle light hover */
+        }
+        .autocomplete-suggestion-item strong {
+            color: var(--color-primary);
+        }
+        .autocomplete-suggestion-item .text-xs {
+            color: var(--color-text-medium);
+        }
+
+        /* Chart container styling */
+        .chart-container {
+            background-color: var(--color-background-medium);
+            border-radius: 1rem;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 10px var(--color-shadow-light);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            height: 350px; /* Default height for desktop */
+            width: 100%; /* Ensure it takes full width */
+            display: flex; /* Use flexbox for centering content */
+            flex-direction: column; /* Stack content vertically */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+        }
+        .chart-container canvas {
+            max-height: 100%; /* Ensure canvas doesn't overflow container */
+            max-width: 100%; /* Ensure canvas doesn't overflow container */
+        }
+
+        /* Chart.js specific overrides for aesthetics */
+        canvas {
+            background-color: transparent !important;
+        }
+        .chartjs-tooltip {
+            background: rgba(255, 255, 255, 0.9) !important; /* Lighter tooltip background */
+            border-radius: 0.5rem !important;
+            padding: 0.75rem 1rem !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 0.9rem !important;
+            color: #202124 !important; /* Dark text on light tooltip */
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .chartjs-tooltip-header {
+            padding-bottom: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important; /* Lighter border */
+            font-weight: 600 !important;
+        }
+        .chartjs-tooltip-body {
+            font-weight: 400 !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+                margin-top: 1.5rem;
+                padding-bottom: 0.5rem;
+            }
+            input[type="text"], input[type="number"], button {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 0.6rem;
+            }
+            .result-item, .autocomplete-suggestion-item {
+                font-size: 0.9rem;
+            }
+            .upside-positive, .upside-negative {
+                font-size: 1rem;
+            }
+            .chart-container {
+                height: 280px; /* Adjusted height for mobile */
+                padding: 1rem;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .flex-col.sm\:flex-row {
+                flex-direction: column;
+            }
+            .grid.grid-cols-1.sm\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="card">
+        <h1 class="text-3xl font-bold text-black mb-6">Company Analysis Dashboard 📈</h1>
+
+        <div class="mb-5 autocomplete-container">
+            <label for="stockSymbol" class="text-base font-medium mb-2">Stock Symbol (e.g., AAPL)</label>
+            <input type="text" id="stockSymbol" placeholder="Enter symbol or company name" class="text-base focus:ring-blue-500 focus:border-blue-500">
+            <ul id="autocompleteSuggestions" class="autocomplete-suggestions hidden">
+                <!-- Suggestions will be populated here -->
+            </ul>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+                <label for="earningsGrowthInput" class="text-base font-medium mb-2">Earnings Growth (G, %):</label>
+                <input type="number" id="earningsGrowthInput" value="8" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="marginOfSafetyInput" class="text-base font-medium mb-2">Desired Margin of Safety (%, e.g., 25 for 25%):</label>
+                <input type="number" id="marginOfSafetyInput" value="25" min="0" step="1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+
+        <div class="mb-5 border-t border-gray-200 mt-8 pt-6">
+            <h3 class="text-xl font-semibold mb-3">Valuation Model Inputs</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="grahamBondYield" class="text-base font-medium mb-2">Graham Bond Yield (%):</label>
+                    <input type="number" id="grahamBondYield" value="4.4" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="grahamGrowthlessPE" class="text-base font-medium mb-2">Graham Growthless P/E:</label>
+                    <input type="number" id="grahamGrowthlessPE" value="8.5" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="dcfDiscountRate" class="text-base font-medium mb-2">DCF Discount Rate (%):</label>
+                    <input type="number" id="dcfDiscountRate" value="10" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="dcfTerminalPE" class="text-base font-medium mb-2">DCF Terminal P/E:</label>
+                    <input type="number" id="dcfTerminalPE" value="20" min="0" step="1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="targetPB" class="text-base font-medium mb-2">Target P/B Ratio:</label>
+                    <input type="number" id="targetPB" value="2.5" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-5">
+            <button id="calculateBtn" class="flex-1">
+                Calculate
+            </button>
+            <button id="resetBtn" class="flex-1 button-secondary">
+                Reset
+            </button>
+        </div>
+
+        <div id="loadingIndicator" class="hidden mt-4 text-blue-600">
+            <!-- This loader is now primarily for general feedback, button has its own -->
+            <span class="loading-spinner"></span> Fetching data...
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <div id="results" class="results-section hidden border-t border-gray-200 mt-8 pt-6">
+            <h2 class="text-2xl font-bold mb-4">Company Overview & Valuation</h2>
+            
+            <h3 class="text-xl font-semibold mb-3">Key Financial Metrics</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                <div class="result-item">
+                    <span class="result-label">Company Name:</span>
+                    <span id="companyNameDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Exchange:</span>
+                    <span id="exchangeDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Market Cap:</span>
+                    <span id="marketCapDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Enterprise Value:</span>
+                    <span id="enterpriseValueDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Current Price:</span>
+                    <span id="currentPriceDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">EPS (TTM):</span>
+                    <span id="epsDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">P/E Ratio:</span>
+                    <span id="peRatioDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Forward P/E:</span>
+                    <span id="forwardPeDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Dividend Yield:</span>
+                    <span id="dividendYieldDisplay" class="result-value"></span>
+                </div>
+                 <div class="result-item">
+                    <span class="result-label">Book Value Per Share:</span>
+                    <span id="bookValuePerShareDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">52 Week High:</span>
+                    <span id="weekHighDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">52 Week Low:</span>
+                    <span id="weekLowDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item sm:col-span-2">
+                    <span class="result-label">Earnings Growth (User/Analyst):</span>
+                    <span id="growthDisplay" class="result-value"></span>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mt-6 mb-3">Valuation Model Outputs</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                <div class="result-item">
+                    <span class="result-label">Intrinsic Value (Graham):</span>
+                    <span id="intrinsicValueDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">DCF Value (Simplified):</span>
+                    <span id="dcfValueDisplay" class="result-value"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">P/B Value (Target P/B 2.5):</span>
+                    <span id="pbValueDisplay" class="result-value"></span>
+                </div>
+            </div>
+
+            <div class="result-item font-bold text-lg mt-4">
+                <span class="result-label">Average Fair Value:</span>
+                <span id="averageFairValueDisplay" class="result-value text-blue-600"></span>
+            </div>
+            <div class="result-item font-bold text-lg">
+                <span class="result-label">Fair Value (with MOS):</span>
+                <span id="mosFairValueDisplay" class="result-value text-blue-600"></span>
+            </div>
+            <div class="result-item font-bold text-lg">
+                <span class="result-label">Upside Potential (from Avg FV):</span>
+                <span id="upsideDisplay" class="result-value"></span>
+            </div>
+            <div class="result-item font-bold text-lg">
+                <span class="result-label">Upside Potential (from MOS FV):</span>
+                <span id="upsideMosDisplay" class="result-value"></span>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-xl font-semibold mb-4 text-center">Visualizations</h3>
+                <div class="chart-container">
+                    <canvas id="historicalPriceChart"></canvas>
+                    <div id="historicalPriceNoData" class="text-center text-gray-500 mt-4 hidden">No historical price data available.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="valuationComparisonChart"></canvas>
+                    <div id="valuationComparisonNoData" class="text-center text-gray-500 mt-4 hidden">No valuation comparison data available.</div>
+                </div>
+            </div>
+        </div>
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This application attempts to fetch live data from Alpha Vantage. Due to browser security (CORS) and API rate limits (e.g., 5 requests per minute, 25 per day for free tier), direct client-side calls may not always work reliably or may hit limits. For production, a backend proxy is recommended. Valuation models are simplified and for educational purposes only.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const stockSymbolInput = document.getElementById('stockSymbol');
+            const earningsGrowthInput = document.getElementById('earningsGrowthInput');
+            const marginOfSafetyInput = document.getElementById('marginOfSafetyInput');
+            
+            // User-editable valuation constants
+            const grahamBondYieldInput = document.getElementById('grahamBondYield');
+            const grahamGrowthlessPEInput = document.getElementById('grahamGrowthlessPE');
+            const dcfDiscountRateInput = document.getElementById('dcfDiscountRate');
+            const dcfTerminalPEInput = document.getElementById('dcfTerminalPE');
+            const targetPBInput = document.getElementById('targetPB');
+
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultsDiv = document.getElementById('results');
+            const autocompleteSuggestions = document.getElementById('autocompleteSuggestions');
+
+            // Display elements for results
+            const companyNameDisplay = document.getElementById('companyNameDisplay');
+            const exchangeDisplay = document.getElementById('exchangeDisplay');
+            const marketCapDisplay = document.getElementById('marketCapDisplay');
+            const enterpriseValueDisplay = document.getElementById('enterpriseValueDisplay');
+            const currentPriceDisplay = document.getElementById('currentPriceDisplay');
+            const epsDisplay = document.getElementById('epsDisplay');
+            const peRatioDisplay = document.getElementById('peRatioDisplay');
+            const forwardPeDisplay = document.getElementById('forwardPeDisplay');
+            const dividendYieldDisplay = document.getElementById('dividendYieldDisplay');
+            const bookValuePerShareDisplay = document.getElementById('bookValuePerShareDisplay');
+            const weekHighDisplay = document.getElementById('weekHighDisplay');
+            const weekLowDisplay = document.getElementById('weekLowDisplay');
+            const growthDisplay = document.getElementById('growthDisplay');
+            const intrinsicValueDisplay = document.getElementById('intrinsicValueDisplay');
+            const dcfValueDisplay = document.getElementById('dcfValueDisplay');
+            const pbValueDisplay = document.getElementById('pbValueDisplay');
+            const averageFairValueDisplay = document.getElementById('averageFairValueDisplay');
+            const mosFairValueDisplay = document.getElementById('mosFairValueDisplay');
+            const upsideDisplay = document.getElementById('upsideDisplay');
+            const upsideMosDisplay = document.getElementById('upsideMosDisplay');
+
+            // Chart instances
+            let historicalPriceChartInstance = null;
+            let valuationComparisonChartInstance = null;
+
+            // New DOM elements for no data messages
+            const historicalPriceNoData = document.getElementById('historicalPriceNoData');
+            const valuationComparisonNoData = document.getElementById('valuationComparisonNoData');
+
+            // --- Constants ---
+            const DCF_PROJECTION_YEARS = 5;
+            const DEBOUNCE_DELAY = 300; // milliseconds for autocomplete
+
+            // Caching configuration
+            const STOCK_DATA_CACHE_DURATION_MS = 12 * 60 * 60 * 1000; // 12 hours for main stock data
+            const SUGGESTION_CACHE_DURATION_MS = 60 * 60 * 1000; // 60 minutes for suggestions
+
+            const stockDataCache = {};
+            const suggestionCache = {};
+
+            // --- Helper Functions ---
+
+            /**
+             * Displays an error message and updates UI state.
+             * @param {string} message The error message to display.
+             */
+            function displayError(message) {
+                console.error("Displaying error:", message); // Log the error being displayed
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden'); // Hide general loader
+                calculateBtn.disabled = false;
+                calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                resetBtn.disabled = false;
+            }
+
+            /**
+             * Formats a large number into a human-readable string (e.g., 1.23T, 45.6B, 789M).
+             * @param {number} num The number to format.
+             * @returns {string} The formatted string.
+             */
+            function formatLargeNumber(num) {
+                if (isNaN(num) || num === 0) return 'N/A';
+                const absNum = Math.abs(num);
+                if (absNum >= 1.0e12) return (num / 1.0e12).toFixed(2) + "T";
+                if (absNum >= 1.0e9) return (num / 1.0e9).toFixed(2) + "B";
+                if (absNum >= 1.0e6) return (num / 1.0e6).toFixed(2) + "M";
+                return num.toFixed(2);
+            }
+
+            /**
+             * Resets the form and clears all results and charts.
+             */
+            const resetForm = () => {
+                stockSymbolInput.value = '';
+                earningsGrowthInput.value = '8'; // Reset to default
+                marginOfSafetyInput.value = '25'; // Reset to default
+                grahamBondYieldInput.value = '4.4'; // Reset to default
+                grahamGrowthlessPEInput.value = '8.5'; // Reset to default
+                dcfDiscountRateInput.value = '10'; // Reset to default
+                dcfTerminalPEInput.value = '20'; // Reset to default
+                targetPBInput.value = '2.5'; // Reset to default
+
+                resultsDiv.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                errorMessage.textContent = '';
+                loadingIndicator.classList.add('hidden');
+                calculateBtn.disabled = false;
+                calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                resetBtn.disabled = false;
+                autocompleteSuggestions.classList.add('hidden');
+
+                // Destroy existing chart instances
+                if (historicalPriceChartInstance) {
+                    historicalPriceChartInstance.destroy();
+                    historicalPriceChartInstance = null;
+                }
+                if (valuationComparisonChartInstance) {
+                    valuationComparisonChartInstance.destroy();
+                    valuationComparisonChartInstance = null;
+                }
+                historicalPriceNoData.classList.add('hidden');
+                valuationComparisonNoData.classList.add('hidden');
+            };
+
+            /**
+             * Debounces a function call.
+             * @param {Function} func The function to debounce.
+             * @param {number} delay The debounce delay in milliseconds.
+             * @returns {Function} The debounced function.
+             */
+            const debounce = (func, delay) => {
+                let timeoutId;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(context, args), delay);
+                };
+            };
+
+            /**
+             * Creates an Alpha Vantage API configuration object for RapidAPI.
+             * @param {string} name The name for this API key config.
+             * @param {string} apiKey The RapidAPI key.
+             * @returns {object} An API configuration object.
+             */
+            const createRapidApiAlphaVantageConfig = (name, apiKey) => ({
+                name: name,
+                apiKey: apiKey,
+                baseUrl: 'https://alpha-vantage.p.rapidapi.com/query', // RapidAPI endpoint
+                headers: {
+                    'x-rapidapi-key': apiKey,
+                    'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com'
+                },
+                fetchData: async (symbol, currentApiKey, headers) => {
+                    const cacheKey = `stock_data_${symbol}`;
+                    const cachedData = stockDataCache[cacheKey];
+
+                    if (cachedData && (Date.now() - cachedData.timestamp < STOCK_DATA_CACHE_DURATION_MS)) {
+                        console.log(`[${name}] Serving stock data for ${symbol} from cache.`);
+                        return cachedData.data;
+                    }
+
+                    console.log(`[${name}] Attempting to fetch data for symbol: ${symbol}`);
+                    const quoteUrl = `https://alpha-vantage.p.rapidapi.com/query?function=GLOBAL_QUOTE&symbol=${symbol}`;
+                    const overviewUrl = `https://alpha-vantage.p.rapidapi.com/query?function=OVERVIEW&symbol=${symbol}`;
+                    const historicalUrl = `https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}`; // Removed outputsize=compact
+
+                    const [quoteResponse, overviewResponse, historicalResponse] = await Promise.all([
+                        fetch(quoteUrl, { headers: headers }),
+                        fetch(overviewUrl, { headers: headers }),
+                        fetch(historicalUrl, { headers: headers })
+                    ]);
+
+                    console.log(`[${name}] Quote Response Status: ${quoteResponse.status}`);
+                    console.log(`[${name}] Overview Response Status: ${overviewResponse.status}`);
+                    console.log(`[${name}] Historical Response Status: ${historicalResponse.status}`);
+
+                    if (!quoteResponse.ok) throw new Error(`RapidAPI Alpha Vantage Quote failed: ${quoteResponse.statusText}`);
+                    if (!overviewResponse.ok) throw new Error(`RapidAPI Alpha Vantage Overview failed: ${overviewResponse.statusText}`);
+                    if (!historicalResponse.ok) throw new Error(`RapidAPI Alpha Vantage Historical failed: ${historicalResponse.statusText}`);
+
+                    const quoteData = await quoteResponse.json();
+                    const overviewData = await overviewResponse.json();
+                    const historicalData = await historicalResponse.json();
+
+                    console.log(`[${name}] Raw Quote Data:`, quoteData);
+                    console.log(`[${name}] Raw Overview Data:`, overviewData);
+                    console.log(`[${name}] Raw Historical Data:`, historicalData);
+
+                    // Check for API-specific error messages (Alpha Vantage often returns 'Error Message' or 'Note' for limits)
+                    if (quoteData['Error Message'] || overviewData['Error Message'] || historicalData['Error Message'] ||
+                        quoteData['Note'] || overviewData['Note'] || historicalData['Note']) {
+                        const errorMessage = quoteData['Error Message'] || overviewData['Error Message'] || historicalData['Error Message'] ||
+                                              quoteData['Note'] || overviewData['Note'] || historicalData['Note'] ||
+                                              `${name} API error or rate limit reached.`;
+                        console.error(`[${name}] API returned an error message:`, errorMessage);
+                        throw new Error(errorMessage);
+                    }
+                    // Check if expected data exists
+                    if (!quoteData['Global Quote'] || !overviewData['Symbol']) {
+                         const missingDataError = `${name} did not return expected data for the symbol.`;
+                         console.error(`[${name}] Missing expected data:`, quoteData['Global Quote'], overviewData['Symbol']);
+                         throw new Error(missingDataError);
+                    }
+
+                    // Parse data
+                    const currentPrice = parseFloat(quoteData['Global Quote']['05. price']);
+                    const eps = parseFloat(overviewData['EPS']);
+                    const peRatio = parseFloat(overviewData['PERatio']);
+                    const forwardPe = parseFloat(overviewData['ForwardPE']);
+                    const dividendYield = parseFloat(overviewData['DividendYield']) * 100; // Convert to percentage
+                    const bookValue = parseFloat(overviewData['BookValue']);
+                    const sharesOutstanding = parseFloat(overviewData['SharesOutstanding']);
+                    const marketCap = parseFloat(overviewData['MarketCapitalization']);
+                    const enterpriseValue = parseFloat(overviewData['EV']);
+                    const fiftyTwoWeekHigh = parseFloat(overviewData['52WeekHigh']);
+                    const fiftyTwoWeekLow = parseFloat(overviewData['52WeekLow']);
+                    const companyName = overviewData['Name'];
+                    const exchange = overviewData['Exchange'];
+                    
+                    let earningsGrowthFromAPI = null;
+                    if (overviewData['QuarterlyEarningsGrowthYOY']) {
+                        const qtrGrowth = parseFloat(overviewData['QuarterlyEarningsGrowthYOY']);
+                        if (!isNaN(qtrGrowth)) {
+                            earningsGrowthFromAPI = qtrGrowth * 100; // Convert to percentage for display
+                        }
+                    }
+
+                    const historicalPrices = [];
+                    const historicalDates = [];
+                    if (historicalData['Time Series (Daily)']) {
+                        const timeSeries = historicalData['Time Series (Daily)'];
+                        const dates = Object.keys(timeSeries).slice(0, 90).reverse(); // Get last 90 days, reverse for chronological
+                        dates.forEach(date => {
+                            historicalDates.push(date);
+                            historicalPrices.push(parseFloat(timeSeries[date]['5. adjusted close']));
+                        });
+                    }
+                    const resultData = { currentPrice, eps, peRatio, forwardPe, dividendYield, bookValue, sharesOutstanding, marketCap, enterpriseValue, fiftyTwoWeekHigh, fiftyTwoWeekLow, companyName, exchange, historicalPrices, historicalDates, earningsGrowthFromAPI };
+                    console.log(`[${name}] Parsed Data:`, resultData);
+                    
+                    // Log raw MarketCapitalization and EV for debugging
+                    console.log(`[${name}] Raw MarketCapitalization from API:`, overviewData['MarketCapitalization']);
+                    console.log(`[${name}] Raw EV from API:`, overviewData['EV']);
+
+                    // Store in cache
+                    stockDataCache[cacheKey] = { data: resultData, timestamp: Date.now() };
+                    console.log(`[${name}] Stock data for ${symbol} cached.`);
+
+                    return resultData;
+                },
+                fetchSuggestions: async (keywords, currentApiKey, headers) => {
+                    const cacheKey = `suggestions_${keywords}`;
+                    const cachedSuggestions = suggestionCache[cacheKey];
+
+                    if (cachedSuggestions && (Date.now() - cachedSuggestions.timestamp < SUGGESTION_CACHE_DURATION_MS)) {
+                        console.log(`[${name}] Serving suggestions for "${keywords}" from cache.`);
+                        return cachedSuggestions.data;
+                    }
+
+                    console.log(`[${name}] Attempting to fetch suggestions for keywords: ${keywords}`);
+                    const searchUrl = `https://alpha-vantage.p.rapidapi.com/query?function=SYMBOL_SEARCH&keywords=${keywords}`;
+                    const response = await fetch(searchUrl, { headers: headers });
+                    console.log(`[${name}] Suggestion Response Status: ${response.status}`);
+                    if (!response.ok) throw new Error(`RapidAPI Alpha Vantage search failed: ${response.statusText}`);
+                    const data = await response.json();
+                    console.log(`[${name}] Raw Suggestion Data:`, data);
+                    if (data['Error Message'] || data['Note']) throw new Error(`RapidAPI Alpha Vantage search error: ${data['Error Message'] || data['Note']}`);
+                    
+                    const resultSuggestions = data.bestMatches || [];
+                    
+                    // Store in cache
+                    suggestionCache[cacheKey] = { data: resultSuggestions, timestamp: Date.now() };
+                    console.log(`[${name}] Suggestions for "${keywords}" cached.`);
+                    
+                    return resultSuggestions;
+                }
+            });
+
+            // --- API Configurations (Now using RapidAPI Alpha Vantage) ---
+            const API_CONFIGS = [
+                createRapidApiAlphaVantageConfig('RapidAPI Alpha Vantage', '7b1376c647msh2d95bf797c17c41p11c0c6jsn6be501ad4e40')
+            ];
+
+            /**
+             * Fetches and displays autocomplete suggestions from available APIs.
+             * @param {string} query The search keywords.
+             */
+            const fetchAndDisplaySuggestions = async (query) => {
+                if (query.length < 2) {
+                    autocompleteSuggestions.classList.add('hidden');
+                    return;
+                }
+
+                autocompleteSuggestions.innerHTML = ''; // Clear previous suggestions
+                
+                for (const api of API_CONFIGS) {
+                    try {
+                        const matches = await api.fetchSuggestions(query, api.apiKey, api.headers); // Pass headers
+                        if (matches && matches.length > 0) {
+                            matches.forEach(match => {
+                                const symbol = match['1. symbol'];
+                                const name = match['2. name'];
+                                const region = match['4. region'];
+                                const type = match['3. type'];
+
+                                const listItem = document.createElement('li');
+                                listItem.classList.add('autocomplete-suggestion-item');
+                                listItem.innerHTML = `<strong>${symbol}</strong> - ${name} (${type}, ${region}) <span class="text-xs text-gray-500">(${api.name})</span>`;
+                                listItem.dataset.symbol = symbol;
+
+                                listItem.addEventListener('click', () => {
+                                    stockSymbolInput.value = symbol;
+                                    autocompleteSuggestions.classList.add('hidden');
+                                });
+                                autocompleteSuggestions.appendChild(listItem);
+                            });
+                            autocompleteSuggestions.classList.remove('hidden');
+                            return; // Stop after first successful API provides suggestions
+                        }
+                    } catch (error) {
+                        console.warn(`Autocomplete from ${api.name} failed:`, error.message);
+                        // Continue to next API
+                    }
+                }
+                autocompleteSuggestions.classList.add('hidden'); // Hide if no API provides suggestions
+            };
+
+            const debouncedFetchAndDisplaySuggestions = debounce(fetchAndDisplaySuggestions, DEBOUNCE_DELAY);
+
+            /**
+             * Renders the historical price chart.
+             * @param {Array<string>} labels Dates for the X-axis.
+             * @param {Array<number>} data Prices for the Y-axis.
+             */
+            const renderHistoricalPriceChart = (labels, data) => {
+                const ctx = document.getElementById('historicalPriceChart').getContext('2d');
+                if (historicalPriceChartInstance) {
+                    historicalPriceChartInstance.destroy();
+                }
+                
+                if (data.length === 0) {
+                    historicalPriceNoData.classList.remove('hidden');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear canvas if no data
+                    return; // Don't render chart if no data
+                } else {
+                    historicalPriceNoData.classList.add('hidden');
+                }
+
+                historicalPriceChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Adjusted Close Price',
+                            data: data,
+                            borderColor: 'var(--color-primary)',
+                            backgroundColor: 'rgba(26, 115, 232, 0.15)', /* Lighter primary blue for light theme */
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: 'var(--color-text-dark)' // Use dark text color for legend
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'var(--color-text-dark)', // Use dark text color for x-axis ticks
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'var(--color-text-dark)', // Use dark text color for y-axis ticks
+                                    callback: function(value) {
+                                        return '$' + value.toFixed(0);
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            /**
+             * Renders the valuation comparison bar chart.
+             * @param {number} currentPrice The current stock price.
+             * @param {number} grahamValue Intrinsic value from Graham formula.
+             * @param {number} dcfValue Discounted Cash Flow value.
+             * @param {number} pbValue Price-to-Book value.
+             * @param {number} averageFairValue Average of calculated fair values.
+             * @param {number} mosFairValue Fair value adjusted for Margin of Safety.
+             */
+            const renderValuationComparisonChart = (currentPrice, grahamValue, dcfValue, pbValue, averageFairValue, mosFairValue) => {
+                const ctx = document.getElementById('valuationComparisonChart').getContext('2d');
+                if (valuationComparisonChartInstance) {
+                    valuationComparisonChartInstance.destroy();
+                }
+
+                // Check if there's meaningful data to display for the comparison chart
+                if (averageFairValue === 0 || isNaN(averageFairValue) || currentPrice === 0 || isNaN(currentPrice)) {
+                    valuationComparisonNoData.classList.remove('hidden');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear canvas if no data
+                    return; // Don't render chart if no meaningful data
+                } else {
+                    valuationComparisonNoData.classList.add('hidden');
+                }
+
+                valuationComparisonChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Current Price', 'Graham Value', 'DCF Value', 'P/B Value', 'Average Fair Value', 'MOS Fair Value'],
+                        datasets: [{
+                            label: 'Value ($)',
+                            data: [currentPrice, grahamValue, dcfValue, pbValue, averageFairValue, mosFairValue],
+                            backgroundColor: [
+                                '#5F6368', /* Accent Gray (text-medium) */
+                                '#1A73E8', /* Primary Blue */
+                                '#34A853', /* Success Green */
+                                '#FBBC04', /* Google Yellow */
+                                '#174EA6', /* Darker Primary Blue */
+                                '#4285F4'  /* Lighter Blue for MOS */
+                            ],
+                            borderColor: [
+                                '#3C4043',
+                                '#174EA6',
+                                '#1E8E3E',
+                                '#F9AB00',
+                                '#0D47A1',
+                                '#3367D6'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: $${context.parsed.y.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'var(--color-text-dark)' // Use dark text color for x-axis ticks
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'var(--color-text-dark)', // Use dark text color for y-axis ticks
+                                    callback: function(value) {
+                                        return '$' + value.toFixed(0);
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            // --- Event Listeners ---
+
+            stockSymbolInput.addEventListener('input', (event) => {
+                const query = event.target.value.trim();
+                if (query) {
+                    debouncedFetchAndDisplaySuggestions(query);
+                } else {
+                    autocompleteSuggestions.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!event.target.closest('.autocomplete-container')) {
+                    autocompleteSuggestions.classList.add('hidden');
+                }
+            });
+
+            resetBtn.addEventListener('click', resetForm);
+
+            calculateBtn.addEventListener('click', async () => {
+                console.log("Calculate button clicked.");
+                const symbol = stockSymbolInput.value.trim().toUpperCase();
+                let userEarningsGrowth = parseFloat(earningsGrowthInput.value) / 100; // Convert to decimal
+                const userMarginOfSafety = parseFloat(marginOfSafetyInput.value) / 100; // Convert to decimal
+
+                // Get user-defined valuation constants
+                const grahamBondYield = parseFloat(grahamBondYieldInput.value);
+                const grahamGrowthlessPE = parseFloat(grahamGrowthlessPEInput.value);
+                const dcfDiscountRate = parseFloat(dcfDiscountRateInput.value) / 100; // Convert to decimal
+                const dcfTerminalPE = parseFloat(dcfTerminalPEInput.value);
+                const targetPB = parseFloat(targetPBInput.value); // Correctly parse the value from the input
+
+
+                // --- UI State Management ---
+                resultsDiv.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                errorMessage.textContent = '';
+                calculateBtn.disabled = true;
+                resetBtn.disabled = true;
+                autocompleteSuggestions.classList.add('hidden');
+                historicalPriceNoData.classList.add('hidden'); // Hide on new calculation
+                valuationComparisonNoData.classList.add('hidden'); // Hide on new calculation
+
+
+                // Show loader animation inside the button
+                calculateBtn.innerHTML = '<span class="loading-spinner"></span> Calculating...';
+
+                // Destroy existing charts
+                if (historicalPriceChartInstance) historicalPriceChartInstance.destroy();
+                if (valuationComparisonChartInstance) valuationComparisonChartInstance.destroy();
+
+                // --- Input Validation ---
+                if (!symbol) {
+                    displayError('Please enter a stock symbol.');
+                    console.log("Validation Error: No stock symbol entered.");
+                    return;
+                }
+                if (isNaN(userEarningsGrowth) || userEarningsGrowth < 0) {
+                    displayError('Please enter a valid non-negative earnings growth percentage.');
+                    console.log("Validation Error: Invalid earnings growth.");
+                    return;
+                }
+                if (isNaN(userMarginOfSafety) || userMarginOfSafety < 0) {
+                    displayError('Please enter a valid non-negative Margin of Safety percentage.');
+                    console.log("Validation Error: Invalid margin of safety.");
+                    return;
+                }
+                if (isNaN(grahamBondYield) || grahamBondYield <= 0 || isNaN(grahamGrowthlessPE) || grahamGrowthlessPE <= 0 ||
+                    isNaN(dcfDiscountRate) || dcfDiscountRate <= 0 || isNaN(dcfTerminalPE) || dcfTerminalPE <= 0 ||
+                    isNaN(targetPB) || targetPB <= 0) { // Use the parsed targetPB here
+                    displayError('Please ensure all valuation model inputs are valid positive numbers.');
+                    console.log("Validation Error: Invalid valuation model inputs.");
+                    return;
+                }
+                console.log("Input validation passed.");
+
+
+                let fetchedData = null;
+                let lastError = '';
+
+                // --- Data Fetching Logic (Fallback) ---
+                for (const api of API_CONFIGS) {
+                    try {
+                        console.log(`Attempting to fetch data from ${api.name}...`);
+                        // Pass API key and headers to fetchData
+                        fetchedData = await api.fetchData(symbol, api.apiKey, api.headers); 
+                        console.log(`Successfully fetched data from ${api.name}.`);
+                        break; // Exit loop if data is successfully fetched
+                    } catch (error) {
+                        console.error(`Error fetching from ${api.name}:`, error.message);
+                        lastError = `Failed to fetch from ${api.name}. Reason: ${error.message}.`;
+                        // Continue to the next API
+                    }
+                }
+
+                if (!fetchedData) {
+                    displayError(`All API attempts failed. ${lastError} Please try again later or check the stock symbol.`);
+                    console.error("Data fetching failed for all APIs.");
+                    return;
+                }
+
+                try {
+                    console.log("Starting valuation calculations with fetched data.");
+                    // Destructure fetched data and ensure numbers
+                    let { currentPrice, eps, peRatio, forwardPe, dividendYield, bookValue, sharesOutstanding, marketCap, enterpriseValue, fiftyTwoWeekHigh, fiftyTwoWeekLow, companyName, exchange, historicalPrices, historicalDates, earningsGrowthFromAPI } = fetchedData;
+                    
+                    currentPrice = parseFloat(currentPrice) || 0;
+                    eps = parseFloat(eps) || 0;
+                    peRatio = parseFloat(peRatio) || 0;
+                    forwardPe = parseFloat(forwardPe) || 0;
+                    dividendYield = parseFloat(dividendYield) || 0;
+                    bookValue = parseFloat(bookValue) || 0;
+                    sharesOutstanding = parseFloat(sharesOutstanding) || 1;
+                    marketCap = parseFloat(marketCap) || 0;
+                    enterpriseValue = parseFloat(enterpriseValue) || 0;
+                    fiftyTwoWeekHigh = parseFloat(fiftyTwoWeekHigh) || 0;
+                    fiftyTwoWeekLow = parseFloat(fiftyTwoWeekLow) || 0;
+
+                    // Update earnings growth input with API data if user hasn't modified it from default
+                    if (earningsGrowthInput.value === '8' && earningsGrowthFromAPI !== null && !isNaN(earningsGrowthFromAPI)) {
+                        earningsGrowthInput.value = earningsGrowthFromAPI.toFixed(1); // Set suggested value in input
+                        userEarningsGrowth = earningsGrowthFromAPI / 100; // Use this for calculation
+                        console.log(`Updated earnings growth to API suggested: ${earningsGrowthFromAPI.toFixed(1)}%`);
+                    } else {
+                        // Otherwise, use the user's current input value for calculation
+                        userEarningsGrowth = parseFloat(earningsGrowthInput.value) / 100;
+                        console.log(`Using user-defined earnings growth: ${(userEarningsGrowth * 100).toFixed(1)}%`);
+                    }
+
+                    const growthRateDecimal = userEarningsGrowth;
+
+                    // --- Valuation Calculations ---
+                    // 1. Graham Intrinsic Value: V = EPS * (8.5 + 2G) * 4.4 / Y
+                    // Where 8.5 is the P/E ratio of a company with no growth, G is the earnings growth rate,
+                    // 4.4 is the average yield of high-grade corporate bonds, and Y is the current yield of AAA corporate bonds.
+                    // Using user-defined bond yield for Y, but simplified to 4.4/user_bond_yield
+                    const grahamIntrinsicValue = eps * (grahamGrowthlessPE + (2 * (growthRateDecimal * 100))) * (grahamBondYield / 4.4);
+                    console.log("Graham Intrinsic Value:", grahamIntrinsicValue.toFixed(2));
+
+
+                    // 2. Simplified DCF Value
+                    let projectedEPS = eps;
+                    for (let i = 0; i < DCF_PROJECTION_YEARS; i++) {
+                        projectedEPS *= (1 + growthRateDecimal);
+                    }
+                    const terminalValue = projectedEPS * dcfTerminalPE;
+                    const dcfValue = terminalValue / Math.pow((1 + dcfDiscountRate), DCF_PROJECTION_YEARS);
+                    console.log("DCF Value:", dcfValue.toFixed(2));
+
+                    // 3. P/B Value
+                    const bookValuePerShare = bookValue; // Assuming 'bookValue' from APIs is already per share
+                    const pbValue = bookValuePerShare * targetPB; // Use the parsed targetPB here
+                    console.log("P/B Value:", pbValue.toFixed(2));
+
+                    // Average Fair Value (only consider valid, positive valuations)
+                    const validValuations = [grahamIntrinsicValue, dcfValue, pbValue].filter(val => !isNaN(val) && val > 0);
+                    const averageFairValue = validValuations.length > 0 ? validValuations.reduce((sum, val) => sum + val, 0) / validValuations.length : 0;
+                    console.log("Average Fair Value:", averageFairValue.toFixed(2));
+
+                    // Margin of Safety Adjusted Fair Value
+                    const mosFairValue = averageFairValue / (1 + userMarginOfSafety);
+                    console.log("MOS Fair Value:", mosFairValue.toFixed(2));
+
+                    // Upside Potential
+                    const upsidePercentage = ((averageFairValue - currentPrice) / currentPrice) * 100;
+                    const upsideMosPercentage = ((mosFairValue - currentPrice) / currentPrice) * 100;
+                    console.log("Upside Potential (Avg FV):", upsidePercentage.toFixed(2) + "%");
+                    console.log("Upside Potential (MOS FV):", upsideMosPercentage.toFixed(2) + "%");
+
+                    // --- Display Results ---
+                    companyNameDisplay.textContent = companyName || 'N/A';
+                    exchangeDisplay.textContent = exchange || 'N/A';
+                    marketCapDisplay.textContent = formatLargeNumber(marketCap);
+                    enterpriseValueDisplay.textContent = formatLargeNumber(enterpriseValue);
+                    currentPriceDisplay.textContent = `$${currentPrice.toFixed(2)}`;
+                    epsDisplay.textContent = `$${eps.toFixed(2)}`;
+                    peRatioDisplay.textContent = isNaN(peRatio) || peRatio === 0 ? 'N/A' : peRatio.toFixed(2);
+                    forwardPeDisplay.textContent = isNaN(forwardPe) || forwardPe === 0 ? 'N/A' : forwardPe.toFixed(2);
+                    dividendYieldDisplay.textContent = isNaN(dividendYield) ? 'N/A' : `${dividendYield.toFixed(2)}%`;
+                    bookValuePerShareDisplay.textContent = isNaN(bookValuePerShare) || bookValuePerShare === 0 ? 'N/A' : `$${bookValuePerShare.toFixed(2)}`;
+                    weekHighDisplay.textContent = `$${fiftyTwoWeekHigh.toFixed(2)}`;
+                    weekLowDisplay.textContent = `$${fiftyTwoWeekLow.toFixed(2)}`;
+                    growthDisplay.textContent = `${(growthRateDecimal * 100).toFixed(1)}%`;
+                    intrinsicValueDisplay.textContent = `$${grahamIntrinsicValue.toFixed(2)}`;
+                    dcfValueDisplay.textContent = `$${dcfValue.toFixed(2)}`;
+                    pbValueDisplay.textContent = `$${pbValue.toFixed(2)}`;
+                    averageFairValueDisplay.textContent = `$${averageFairValue.toFixed(2)}`;
+                    mosFairValueDisplay.textContent = `$${mosFairValue.toFixed(2)}`;
+
+                    upsideDisplay.textContent = `${upsidePercentage.toFixed(2)}%`;
+                    upsideDisplay.classList.toggle('upside-positive', upsidePercentage >= 0);
+                    upsideDisplay.classList.toggle('upside-negative', upsidePercentage < 0);
+
+                    upsideMosDisplay.textContent = `${upsideMosPercentage.toFixed(2)}%`;
+                    upsideMosDisplay.classList.toggle('upside-positive', upsideMosPercentage >= 0);
+                    upsideMosDisplay.classList.toggle('upside-negative', upsideMosPercentage < 0);
+
+                    resultsDiv.classList.remove('hidden');
+                    console.log("Results section made visible.");
+
+                    // --- Render Charts ---
+                    if (historicalPrices.length > 0) {
+                        renderHistoricalPriceChart(historicalDates, historicalPrices);
+                        console.log("Historical price chart rendered.");
+                    } else {
+                        console.warn("Not enough historical data to render chart.");
+                        historicalPriceNoData.classList.remove('hidden');
+                    }
+                    renderValuationComparisonChart(currentPrice, grahamIntrinsicValue, dcfValue, pbValue, averageFairValue, mosFairValue);
+                    console.log("Valuation comparison chart rendered.");
+
+                } catch (error) {
+                    console.error('Calculation and display error:', error);
+                    displayError(`Error during calculation or display: ${error.message}. Please check the console for more details.`);
+                } finally {
+                    // Re-enable buttons and hide loading indicator
+                    loadingIndicator.classList.add('hidden'); // Hide general loader
+                    calculateBtn.disabled = false;
+                    calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                    resetBtn.disabled = false;
+                    console.log("Calculation process finished. Buttons re-enabled.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

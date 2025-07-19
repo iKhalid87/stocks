@@ -1,62 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Analysis Dashboard</title>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js CDN for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
     <style>
-        /* Base Colors & Typography for Light Theme */
-        :root {
-            --color-primary: #1A73E8; /* Google Blue for accents */
-            --color-primary-dark: #174EA6; /* Darker primary for hover/active */
-            --color-accent: #4285F4; /* Lighter blue for subtle highlights */
-            --color-background-light: #F8F9FA; /* Light background for the page */
-            --color-background-medium: #FFFFFF; /* White for cards/sections */
-            --color-text-dark: #202124; /* Dark gray for main text */
-            --color-text-medium: #5F6368; /* Medium gray for secondary text */
-            --color-success: #34A853; /* Google Green */
-            --color-danger: #EA4335; /* Google Red */
-            --color-border: #DADCE0; /* Light gray for subtle borders */
-            --color-shadow-light: rgba(0, 0, 0, 0.1);
-            --color-shadow-medium: rgba(0, 0, 0, 0.2);
-
-            /* Light Theme Grey Shades for Buttons */
-            --button-grey-primary: #E0E0E0; /* Light grey */
-            --button-grey-primary-hover: #D5D5D5; /* Slightly darker grey on hover */
-            --button-grey-secondary: #F0F0F0; /* Even lighter grey */
-            --button-grey-secondary-hover: #E5E5E5; /* Slightly darker secondary grey on hover */
+        html {
+            font-family: 'Inter', sans-serif;
         }
 
+        /* Dark theme base colors (from gpt.html) */
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--color-background-light);
+            --tw-bg-opacity: 1;
+            background-color: rgb(15 23 42 / var(--tw-bg-opacity)); /* slate-900 */
+            color: #e2e8f0; /* slate-200 */
+            min-height: 100vh;
+            padding: 2.5rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
-            padding: 2.5rem;
-            color: var(--color-text-medium);
             line-height: 1.6;
         }
+
         .card {
-            background-color: var(--color-background-medium);
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            border-color: #334155; /* slate-700 */
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 15px -2px rgba(0, 0, 0, 0.3); /* Darker shadows for dark theme */
             border-radius: 1.25rem;
-            box-shadow: 0 10px 30px -5px var(--color-shadow-medium), 0 4px 15px -2px var(--color-shadow-light);
             padding: 3rem;
             max-width: 900px;
             width: 100%;
             text-align: left;
-            border: 1px solid var(--color-border);
+            border: 1px solid;
             position: relative;
             overflow: hidden;
         }
+
         h1 {
-            color: var(--color-text-dark);
+            color: #e2e8f0; /* Light text for headings */
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 2rem;
@@ -66,7 +53,7 @@
         h2 {
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--color-text-dark);
+            color: #e2e8f0;
             margin-bottom: 1.5rem;
             text-align: center;
             border-bottom: none;
@@ -75,48 +62,50 @@
         h3 {
             font-size: 1.35rem;
             font-weight: 600;
-            color: var(--color-text-dark);
+            color: #e2e8f0;
             margin-bottom: 1rem;
             text-align: left;
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid #334155; /* Darker border */
             padding-bottom: 0.75rem;
             margin-top: 2rem;
         }
         label {
-            color: var(--color-text-dark);
+            color: #e2e8f0;
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: block;
             font-size: 0.95rem;
         }
         input[type="text"], input[type="number"] {
-            border: 1px solid var(--color-border);
+            background-color: #334155; /* Darker input background */
+            color: #e2e8f0;
+            border-color: #475569; /* Darker input border */
+            border: 1px solid;
             border-radius: 0.75rem;
             padding: 0.85rem 1.25rem;
             width: 100%;
             font-size: 1.05rem;
             outline: none;
             transition: all 0.25s ease-in-out;
-            background-color: #FDFDFD; /* Input background slightly off-white */
-            color: var(--color-text-dark);
         }
         input[type="text"]:focus, input[type="number"]:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
-            background-color: #FFFFFF;
+            border-color: #4285F4; /* Google Blue for focus */
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.25);
+            background-color: #334155;
         }
+
+        /* Buttons from gpt.html, adapted for dark theme */
         button {
-            /* Smaller, Grey Button Style (Light Theme) */
-            background: var(--button-grey-primary);
-            color: var(--color-text-dark); /* Dark text on light button */
-            border-radius: 0.4rem;
-            padding: 0.6rem 1.2rem;
-            font-weight: 600;
+            background-color: #2563eb; /* blue-600 from gpt.html */
+            color: #FFFFFF;
+            padding: 0.5rem 1rem; /* py-2 px-4 from gpt.html */
+            border-radius: 0.375rem; /* rounded-md from gpt.html */
+            font-weight: 600; /* font-semibold */
             cursor: pointer;
             transition: all 0.2s ease-in-out;
-            border: 1px solid var(--color-border); /* Add border for definition */
+            border: none;
             outline: none;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
             width: 100%;
             display: flex;
             align-items: center;
@@ -128,42 +117,33 @@
             overflow: hidden;
         }
         button:hover {
-            background: var(--button-grey-primary-hover);
+            background-color: #1d4ed8; /* blue-700 from gpt.html */
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         button:active {
             transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            background: var(--button-grey-primary);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            background-color: #2563eb;
         }
 
         .button-secondary {
-            background: var(--button-grey-secondary);
-            color: var(--color-text-dark);
-            border: 1px solid var(--color-border);
-            box-shadow: 0 2px 8px var(--color-shadow-light);
-            transition: all 0.2s ease-in-out;
-            border-radius: 0.4rem;
-            padding: 0.6rem 1.2rem;
-            font-weight: 600;
-            font-size: 0.9rem;
+            background-color: #334155; /* slate-700 from gpt.html */
+            color: #e2e8f0; /* slate-200 */
+            border: 1px solid #475569; /* slate-600 equivalent for border */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .button-secondary:hover {
-            background: var(--button-grey-secondary-hover);
-            color: var(--color-text-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px var(--color-shadow-medium);
+            background-color: #475569; /* slate-600 (darker) for hover */
+            color: #e2e8f0;
         }
         .button-secondary:active {
-            transform: translateY(0);
-            box_shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-            background: var(--button-grey-secondary);
+            background-color: #334155;
         }
 
         .loading-spinner {
-            border: 3px solid rgba(0, 0, 0, 0.3); /* Darker spinner for light theme */
-            border-left-color: #202124; /* Darker color for visibility */
+            border: 3px solid rgba(255, 255, 255, 0.3); /* Lighter spinner for dark theme */
+            border-left-color: #e2e8f0; /* Lighter color for visibility */
             border-radius: 50%;
             width: 18px;
             height: 18px;
@@ -176,27 +156,29 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Results and Autocomplete styles adjusted for dark theme */
         .results-section {
-            background-color: var(--color-background-medium);
+            background-color: #1e293b;
             border-radius: 1rem;
             padding: 2rem;
             margin-top: 2.5rem;
-            border: 1px solid var(--color-border);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #334155;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         .result-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0.8rem 0;
-            border-bottom: 1px dashed var(--color-border);
+            border-bottom: 1px dashed #334155;
             font-size: 1rem;
         }
         .result-item:last-child {
             border-bottom: none;
         }
         .result-item:nth-child(even) {
-             background-color: #F5F5F5; /* Slightly different light for alternating rows */
+             background-color: #2d3a4b; /* Slightly different dark for alternating rows */
              padding-left: 0.5rem;
              padding-right: 0.5rem;
              margin-left: -0.5rem;
@@ -205,87 +187,86 @@
         }
         .result-label {
             font-weight: 500;
-            color: var(--color-text-medium);
+            color: #94a3b8; /* slate-400 */
             font-size: 0.95rem;
         }
         .result-value {
             font-weight: 700;
-            color: var(--color-text-dark);
+            color: #e2e8f0; /* slate-200 */
             font-size: 1rem;
         }
         .upside-positive {
-            color: var(--color-success);
+            color: #6ee7b7; /* Green for dark theme */
             font-weight: 800;
             font-size: 1.1rem;
         }
         .upside-negative {
-            color: var(--color-danger);
+            color: #f87171; /* Red for dark theme */
             font-weight: 800;
             font-size: 1.1rem;
         }
         .error-message {
-            color: #721C24; /* Dark red text for light theme */
+            color: #fca5a5; /* Light red text for dark theme */
             font-size: 0.95rem;
             margin-top: 1rem;
             font-weight: 600;
             text-align: center;
-            background-color: #F8D7DA; /* Light red background */
-            border: 1px solid #F5C6CB;
+            background-color: #7f1d1d; /* Dark red background */
+            border: 1px solid #ef4444;
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
         }
         .disclaimer {
             font-size: 0.75rem;
-            color: var(--color-text-medium);
+            color: #94a3b8; /* slate-400 */
             margin-top: 2.5rem;
             text-align: center;
-            border-top: 1px solid var(--color-border);
+            border-top: 1px solid #334155;
             padding-top: 1.5rem;
             line-height: 1.5;
         }
 
-        /* Autocomplete specific styles */
         .autocomplete-suggestions {
-            background-color: #FFFFFF; /* White background */
+            background-color: #1e293b;
             border-radius: 0.75rem;
-            box-shadow: 0 6px 20px var(--color-shadow-medium);
-            border: 1px solid var(--color-border);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
         }
         .autocomplete-suggestion-item {
             padding: 0.8rem 1.2rem;
             font-size: 1rem;
-            color: var(--color-text-dark);
-            border-bottom: 1px solid #E0E0E0; /* Lighter separator */
+            color: #e2e8f0;
+            border-bottom: 1px solid #334155;
         }
         .autocomplete-suggestion-item:hover {
-            background-color: #F0F0F0; /* Subtle light hover */
+            background-color: #2d3a4b;
         }
         .autocomplete-suggestion-item strong {
-            color: var(--color-primary);
+            color: #4285F4; /* Google Blue */
         }
         .autocomplete-suggestion-item .text-xs {
-            color: var(--color-text-medium);
+            color: #94a3b8;
         }
 
         /* Chart container styling */
         .chart-container {
-            background-color: var(--color-background-medium);
+            background-color: #1e293b;
             border-radius: 1rem;
-            border: 1px solid var(--color-border);
-            box-shadow: 0 4px 10px var(--color-shadow-light);
+            border: 1px solid #334155;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             padding: 1.5rem;
             margin-top: 2rem;
             margin-bottom: 2rem;
-            height: 350px; /* Default height for desktop */
-            width: 100%; /* Ensure it takes full width */
-            display: flex; /* Use flexbox for centering content */
-            flex-direction: column; /* Stack content vertically */
-            justify-content: center; /* Center vertically */
-            align-items: center; /* Center horizontally */
+            height: 350px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .chart-container canvas {
-            max-height: 100%; /* Ensure canvas doesn't overflow container */
-            max-width: 100%; /* Ensure canvas doesn't overflow container */
+            max-height: 100%;
+            max-width: 100%;
         }
 
         /* Chart.js specific overrides for aesthetics */
@@ -293,18 +274,18 @@
             background-color: transparent !important;
         }
         .chartjs-tooltip {
-            background: rgba(255, 255, 255, 0.9) !important; /* Lighter tooltip background */
+            background: rgba(30, 41, 59, 0.9) !important; /* Darker tooltip background */
             border-radius: 0.5rem !important;
             padding: 0.75rem 1rem !important;
             font-family: 'Inter', sans-serif !important;
             font-size: 0.9rem !important;
-            color: #202124 !important; /* Dark text on light tooltip */
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #e2e8f0 !important; /* Light text on dark tooltip */
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .chartjs-tooltip-header {
             padding-bottom: 0.5rem !important;
             margin-bottom: 0.5rem !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important; /* Lighter border */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
             font-weight: 600 !important;
         }
         .chartjs-tooltip-body {
@@ -345,7 +326,7 @@
                 font-size: 1rem;
             }
             .chart-container {
-                height: 280px; /* Adjusted height for mobile */
+                height: 280px;
                 padding: 1rem;
                 margin-top: 1.5rem;
                 margin-bottom: 1.5rem;
@@ -359,74 +340,69 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-900 text-slate-200 min-h-screen p-4">
 
-    <div class="card">
-        <h1 class="text-3xl font-bold text-black mb-6">Company Analysis Dashboard 📈</h1>
+    <div class="max-w-4xl mx-auto card bg-slate-800 shadow-xl p-8 rounded-2xl border border-slate-700">
+        <h1 class="text-3xl font-bold text-white mb-6">Company Analysis Dashboard 📈</h1>
 
         <div class="mb-5 autocomplete-container">
-            <label for="stockSymbol" class="text-base font-medium mb-2">Stock Symbol (e.g., AAPL)</label>
-            <input type="text" id="stockSymbol" placeholder="Enter symbol or company name" class="text-base focus:ring-blue-500 focus:border-blue-500">
+            <label for="stockSymbol" class="block font-medium mb-1">Stock Symbol (e.g., AAPL)</label>
+            <input id="stockSymbol" type="text" autocomplete="off" class="w-full px-4 py-2 border rounded-md" placeholder="Enter symbol or company name">
             <ul id="autocompleteSuggestions" class="autocomplete-suggestions hidden">
                 <!-- Suggestions will be populated here -->
             </ul>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
-                <label for="earningsGrowthInput" class="text-base font-medium mb-2">Earnings Growth (G, %):</label>
-                <input type="number" id="earningsGrowthInput" value="8" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                <label for="earningsGrowthInput" class="block font-medium mb-1">Earnings Growth (G, %):</label>
+                <input id="earningsGrowthInput" type="number" value="8" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
             </div>
             <div>
-                <label for="marginOfSafetyInput" class="text-base font-medium mb-2">Desired Margin of Safety (%, e.g., 25 for 25%):</label>
-                <input type="number" id="marginOfSafetyInput" value="25" min="0" step="1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                <label for="marginOfSafetyInput" class="block font-medium mb-1">Desired Margin of Safety (%, e.g., 25 for 25%):</label>
+                <input id="marginOfSafetyInput" type="number" value="25" min="0" step="1" class="w-full px-4 py-2 border rounded-md">
             </div>
         </div>
 
-        <div class="mb-5 border-t border-gray-200 mt-8 pt-6">
-            <h3 class="text-xl font-semibold mb-3">Valuation Model Inputs</h3>
+        <div class="border-t border-slate-600 mt-6 pt-6">
+            <h3 class="text-xl font-semibold mb-4">Valuation Model Inputs</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="grahamBondYield" class="text-base font-medium mb-2">Graham Bond Yield (%):</label>
-                    <input type="number" id="grahamBondYield" value="4.4" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                    <label for="grahamBondYield" class="block font-medium mb-1">Graham Bond Yield (%):</label>
+                    <input id="grahamBondYield" type="number" value="4.4" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
                 </div>
                 <div>
-                    <label for="grahamGrowthlessPE" class="text-base font-medium mb-2">Graham Growthless P/E:</label>
-                    <input type="number" id="grahamGrowthlessPE" value="8.5" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                    <label for="grahamGrowthlessPE" class="block font-medium mb-1">Graham Growthless P/E:</label>
+                    <input id="grahamGrowthlessPE" type="number" value="8.5" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
                 </div>
                 <div>
-                    <label for="dcfDiscountRate" class="text-base font-medium mb-2">DCF Discount Rate (%):</label>
-                    <input type="number" id="dcfDiscountRate" value="10" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                    <label for="dcfDiscountRate" class="block font-medium mb-1">DCF Discount Rate (%):</label>
+                    <input id="dcfDiscountRate" type="number" value="10" min="0" step="0.1" class="w-full px-4 py-2 border rounded-md">
                 </div>
                 <div>
-                    <label for="dcfTerminalPE" class="text-base font-medium mb-2">DCF Terminal P/E:</label>
-                    <input type="number" id="dcfTerminalPE" value="20" min="0" step="1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                    <label for="dcfTerminalPE" class="block font-medium mb-1">DCF Terminal P/E:</label>
+                    <input id="dcfTerminalPE" type="number" value="20" min="0" step="1" class="w-full px-4 py-2 border rounded-md">
                 </div>
                 <div class="sm:col-span-2">
-                    <label for="targetPB" class="text-base font-medium mb-2">Target P/B Ratio:</label>
-                    <input type="number" id="targetPB" value="2.5" min="0" step="0.1" class="text-base focus:ring-blue-500 focus:border-blue-500">
+                    <label for="targetPB" class="block font-medium mb-1">Target P/B Ratio:</label>
+                    <input id="targetPB" type="number" value="2.5" min="0" class="w-full px-4 py-2 border rounded-md" />
                 </div>
             </div>
         </div>
 
-
-        <div class="flex flex-col sm:flex-row gap-4 mb-5">
-            <button id="calculateBtn" class="flex-1">
-                Calculate
-            </button>
-            <button id="resetBtn" class="flex-1 button-secondary">
-                Reset
-            </button>
+        <div class="flex flex-col sm:flex-row gap-4 mt-6">
+            <button id="calculateBtn">Calculate Fair Value</button>
+            <button id="resetBtn" class="button-secondary">Reset</button>
         </div>
 
-        <div id="loadingIndicator" class="hidden mt-4 text-blue-600">
-            <!-- This loader is now primarily for general feedback, button has its own -->
-            <span class="loading-spinner"></span> Fetching data...
+        <div id="loadingIndicator" class="hidden mt-4 flex items-center gap-2 text-blue-600">
+            <span class="loading-spinner border-4 border-t-blue-600 w-5 h-5 rounded-full animate-spin"></span>
+            <span>Fetching data...</span>
         </div>
 
-        <div id="errorMessage" class="error-message hidden"></div>
+        <div id="errorMessage" class="hidden text-red-500 font-semibold mt-4"></div>
 
-        <div id="results" class="results-section hidden border-t border-gray-200 mt-8 pt-6">
+        <div id="results" class="results-section hidden">
             <h2 class="text-2xl font-bold mb-4">Company Overview & Valuation</h2>
             
             <h3 class="text-xl font-semibold mb-3">Key Financial Metrics</h3>
@@ -519,20 +495,20 @@
             </div>
 
             <!-- Charts Section -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="mt-8 pt-6 border-t border-slate-600">
                 <h3 class="text-xl font-semibold mb-4 text-center">Visualizations</h3>
                 <div class="chart-container">
                     <canvas id="historicalPriceChart"></canvas>
-                    <div id="historicalPriceNoData" class="text-center text-gray-500 mt-4 hidden">No historical price data available.</div>
+                    <div id="historicalPriceNoData" class="text-center text-slate-400 mt-4 hidden">No historical price data available.</div>
                 </div>
                 <div class="chart-container">
                     <canvas id="valuationComparisonChart"></canvas>
-                    <div id="valuationComparisonNoData" class="text-center text-gray-500 mt-4 hidden">No valuation comparison data available.</div>
+                    <div id="valuationComparisonNoData" class="text-center text-slate-400 mt-4 hidden">No valuation comparison data available.</div>
                 </div>
             </div>
         </div>
-        <div class="disclaimer">
-            <strong>Disclaimer:</strong> This application attempts to fetch live data from Alpha Vantage. Due to browser security (CORS) and API rate limits (e.g., 5 requests per minute, 25 per day for free tier), direct client-side calls may not always work reliably or may hit limits. For production, a backend proxy is recommended. Valuation models are simplified and for educational purposes only.
+        <div class="disclaimer text-xs text-slate-500 mt-10 border-t pt-4 border-slate-600">
+            <strong>Disclaimer:</strong> Data is from Alpha Vantage (subject to API limits). Valuation models are simplified and for educational use only.
         </div>
     </div>
 
@@ -592,8 +568,8 @@
             const DEBOUNCE_DELAY = 300; // milliseconds for autocomplete
 
             // Caching configuration
-            const STOCK_DATA_CACHE_DURATION_MS = 12 * 60 * 60 * 1000; // 12 hours for main stock data
-            const SUGGESTION_CACHE_DURATION_MS = 60 * 60 * 1000; // 60 minutes for suggestions
+            const STOCK_DATA_CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes for main stock data
+            const SUGGESTION_CACHE_DURATION_MS = 1 * 60 * 1000; // 1 minute for suggestions
 
             const stockDataCache = {};
             const suggestionCache = {};
@@ -610,7 +586,7 @@
                 errorMessage.classList.remove('hidden');
                 loadingIndicator.classList.add('hidden'); // Hide general loader
                 calculateBtn.disabled = false;
-                calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                calculateBtn.innerHTML = 'Calculate Fair Value'; // Reset button text
                 resetBtn.disabled = false;
             }
 
@@ -646,7 +622,7 @@
                 errorMessage.textContent = '';
                 loadingIndicator.classList.add('hidden');
                 calculateBtn.disabled = false;
-                calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                calculateBtn.innerHTML = 'Calculate Fair Value'; // Reset button text
                 resetBtn.disabled = false;
                 autocompleteSuggestions.classList.add('hidden');
 
@@ -716,9 +692,22 @@
                     console.log(`[${name}] Overview Response Status: ${overviewResponse.status}`);
                     console.log(`[${name}] Historical Response Status: ${historicalResponse.status}`);
 
-                    if (!quoteResponse.ok) throw new Error(`RapidAPI Alpha Vantage Quote failed: ${quoteResponse.statusText}`);
-                    if (!overviewResponse.ok) throw new Error(`RapidAPI Alpha Vantage Overview failed: ${overviewResponse.statusText}`);
-                    if (!historicalResponse.ok) throw new Error(`RapidAPI Alpha Vantage Historical failed: ${historicalResponse.statusText}`);
+                    // More detailed error logging for API failures
+                    if (!quoteResponse.ok) {
+                        const errorText = await quoteResponse.text();
+                        console.error(`[${name}] Quote API failed with status ${quoteResponse.status}:`, errorText);
+                        throw new Error(`RapidAPI Alpha Vantage Quote failed: ${quoteResponse.statusText}. Details: ${errorText}`);
+                    }
+                    if (!overviewResponse.ok) {
+                        const errorText = await overviewResponse.text();
+                        console.error(`[${name}] Overview API failed with status ${overviewResponse.status}:`, errorText);
+                        throw new Error(`RapidAPI Alpha Vantage Overview failed: ${overviewResponse.statusText}. Details: ${errorText}`);
+                    }
+                    if (!historicalResponse.ok) {
+                        const errorText = await historicalResponse.text();
+                        console.error(`[${name}] Historical API failed with status ${historicalResponse.status}:`, errorText);
+                        throw new Error(`RapidAPI Alpha Vantage Historical failed: ${historicalResponse.statusText}. Details: ${errorText}`);
+                    }
 
                     const quoteData = await quoteResponse.json();
                     const overviewData = await overviewResponse.json();
@@ -803,7 +792,11 @@
                     const searchUrl = `https://alpha-vantage.p.rapidapi.com/query?function=SYMBOL_SEARCH&keywords=${keywords}`;
                     const response = await fetch(searchUrl, { headers: headers });
                     console.log(`[${name}] Suggestion Response Status: ${response.status}`);
-                    if (!response.ok) throw new Error(`RapidAPI Alpha Vantage search failed: ${response.statusText}`);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`[${name}] Suggestion API failed with status ${response.status}:`, errorText);
+                        throw new Error(`RapidAPI Alpha Vantage search failed: ${response.statusText}. Details: ${errorText}`);
+                    }
                     const data = await response.json();
                     console.log(`[${name}] Raw Suggestion Data:`, data);
                     if (data['Error Message'] || data['Note']) throw new Error(`RapidAPI Alpha Vantage search error: ${data['Error Message'] || data['Note']}`);
@@ -820,6 +813,7 @@
 
             // --- API Configurations (Now using RapidAPI Alpha Vantage) ---
             const API_CONFIGS = [
+                // IMPORTANT: Replace 'YOUR_RAPIDAPI_ALPHA_VANTAGE_API_KEY' with your actual RapidAPI Alpha Vantage API Key
                 createRapidApiAlphaVantageConfig('RapidAPI Alpha Vantage', '7b1376c647msh2d95bf797c17c41p11c0c6jsn6be501ad4e40')
             ];
 
@@ -828,16 +822,20 @@
              * @param {string} query The search keywords.
              */
             const fetchAndDisplaySuggestions = async (query) => {
+                // Always hide suggestions at the start of a new query
+                autocompleteSuggestions.classList.add('hidden');
+                autocompleteSuggestions.innerHTML = ''; // Clear previous suggestions
+
                 if (query.length < 2) {
-                    autocompleteSuggestions.classList.add('hidden');
                     return;
                 }
 
-                autocompleteSuggestions.innerHTML = ''; // Clear previous suggestions
+                console.log(`[Autocomplete] Fetching suggestions for query: "${query}"`);
                 
                 for (const api of API_CONFIGS) {
                     try {
                         const matches = await api.fetchSuggestions(query, api.apiKey, api.headers); // Pass headers
+                        console.log(`[Autocomplete] Received ${matches.length} matches from ${api.name}.`);
                         if (matches && matches.length > 0) {
                             matches.forEach(match => {
                                 const symbol = match['1. symbol'];
@@ -847,7 +845,7 @@
 
                                 const listItem = document.createElement('li');
                                 listItem.classList.add('autocomplete-suggestion-item');
-                                listItem.innerHTML = `<strong>${symbol}</strong> - ${name} (${type}, ${region}) <span class="text-xs text-gray-500">(${api.name})</span>`;
+                                listItem.innerHTML = `<strong>${symbol}</strong> - ${name} (${type}, ${region}) <span class="text-xs text-slate-400">(${api.name})</span>`;
                                 listItem.dataset.symbol = symbol;
 
                                 listItem.addEventListener('click', () => {
@@ -857,14 +855,16 @@
                                 autocompleteSuggestions.appendChild(listItem);
                             });
                             autocompleteSuggestions.classList.remove('hidden');
+                            console.log("[Autocomplete] Suggestions displayed.");
                             return; // Stop after first successful API provides suggestions
                         }
                     } catch (error) {
-                        console.warn(`Autocomplete from ${api.name} failed:`, error.message);
+                        console.warn(`[Autocomplete] From ${api.name} failed:`, error.message);
                         // Continue to next API
                     }
                 }
-                autocompleteSuggestions.classList.add('hidden'); // Hide if no API provides suggestions
+                console.log("[Autocomplete] No suggestions found or all APIs failed.");
+                autocompleteSuggestions.classList.add('hidden'); // Ensure hidden if no API provides suggestions
             };
 
             const debouncedFetchAndDisplaySuggestions = debounce(fetchAndDisplaySuggestions, DEBOUNCE_DELAY);
@@ -895,8 +895,8 @@
                         datasets: [{
                             label: 'Adjusted Close Price',
                             data: data,
-                            borderColor: 'var(--color-primary)',
-                            backgroundColor: 'rgba(26, 115, 232, 0.15)', /* Lighter primary blue for light theme */
+                            borderColor: '#4285F4', /* Google Blue for dark theme */
+                            backgroundColor: 'rgba(66, 133, 244, 0.15)',
                             fill: true,
                             tension: 0.3,
                             pointRadius: 0,
@@ -911,7 +911,7 @@
                                 display: true,
                                 position: 'top',
                                 labels: {
-                                    color: 'var(--color-text-dark)' // Use dark text color for legend
+                                    color: '#e2e8f0' /* Light text for legend */
                                 }
                             },
                             tooltip: {
@@ -927,23 +927,23 @@
                         scales: {
                             x: {
                                 ticks: {
-                                    color: 'var(--color-text-dark)', // Use dark text color for x-axis ticks
+                                    color: '#e2e8f0', /* Light text for x-axis ticks */
                                     maxRotation: 45,
                                     minRotation: 45
                                 },
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                    display: false
                                 }
                             },
                             y: {
                                 ticks: {
-                                    color: 'var(--color-text-dark)', // Use dark text color for y-axis ticks
+                                    color: '#e2e8f0', /* Light text for y-axis ticks */
                                     callback: function(value) {
                                         return '$' + value.toFixed(0);
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                    color: 'rgba(255, 255, 255, 0.1)' /* Subtle light grey grid lines */
                                 }
                             }
                         }
@@ -983,20 +983,20 @@
                             label: 'Value ($)',
                             data: [currentPrice, grahamValue, dcfValue, pbValue, averageFairValue, mosFairValue],
                             backgroundColor: [
-                                '#5F6368', /* Accent Gray (text-medium) */
-                                '#1A73E8', /* Primary Blue */
+                                '#94a3b8', /* slate-400 */
+                                '#4285F4', /* Google Blue */
                                 '#34A853', /* Success Green */
                                 '#FBBC04', /* Google Yellow */
-                                '#174EA6', /* Darker Primary Blue */
-                                '#4285F4'  /* Lighter Blue for MOS */
+                                '#1A73E8', /* Primary Blue */
+                                '#174EA6'  /* Darker Primary Blue */
                             ],
                             borderColor: [
-                                '#3C4043',
-                                '#174EA6',
+                                '#64748b',
+                                '#1A73E8',
                                 '#1E8E3E',
                                 '#F9AB00',
                                 '#0D47A1',
-                                '#3367D6'
+                                '#0B3A82'
                             ],
                             borderWidth: 1
                         }]
@@ -1019,7 +1019,7 @@
                         scales: {
                             x: {
                                 ticks: {
-                                    color: 'var(--color-text-dark)' // Use dark text color for x-axis ticks
+                                    color: '#e2e8f0' /* Light text for x-axis ticks */
                                 },
                                 grid: {
                                     display: false
@@ -1028,13 +1028,13 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    color: 'var(--color-text-dark)', // Use dark text color for y-axis ticks
+                                    color: '#e2e8f0', /* Light text for y-axis ticks */
                                     callback: function(value) {
                                         return '$' + value.toFixed(0);
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)' // Subtle dark grey grid lines
+                                    color: 'rgba(255, 255, 255, 0.1)' /* Subtle light grey grid lines */
                                 }
                             }
                         }
@@ -1261,7 +1261,7 @@
                     // Re-enable buttons and hide loading indicator
                     loadingIndicator.classList.add('hidden'); // Hide general loader
                     calculateBtn.disabled = false;
-                    calculateBtn.innerHTML = 'Calculate'; // Reset button text
+                    calculateBtn.innerHTML = 'Calculate Fair Value'; // Reset button text
                     resetBtn.disabled = false;
                     console.log("Calculation process finished. Buttons re-enabled.");
                 }
